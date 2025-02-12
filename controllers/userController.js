@@ -1,54 +1,98 @@
-const userModel = require("../model/userSchema")
+const userModel = require("../model/userSchema");
+const bcrypt = require('bcrypt');
 
+  module.exports = register =  async(req, res)=>{
+ let{fullName, email, password, confirmPassword} = req.body ;
+ // validate
+ let errors = {} ;
 
-  module.exports = register =  (req, res)=>{
- const{fullName, email, password, confirmPassword} = req.body ;
+ if(!email)errors.email = "email must not be empty" ;
+ if(email.toString().length < 1)errors.email = "email must not be empty" ;
+ if(email.toString().includes('@') == false && email.toString().includes('.') == false)errors.email ="invalid email";
+ if(email == password)errors.password = "Password must not be the same with your email";
 
-  let user = userModel({
-    email,
-    fullName,
-    password 
-  });
+ if(password.toString().length < 8) errors.password = "Password must be more than 7 characters";
+  if(password.toString().length < 1)errors.email = "Password must not be empty" ;
 
-  user.save().
-  then( ()=> console.log("Registered successfully") );
+if(password.toString().length < 1)errors.password = "Password field must not be empty" ;
+ if(confirmPassword.toString() != password)errors.confirmPassword = "Password does not match comfirmpassword";
 
+ let regex =  /^[a-zA-Z ]{2,60}$/
+ if(!regex.test(fullName ) ) errors.fullName ="Name field must contain only alphabets and must be more than one character" ;
+
+// check if user already exist
+try {
+  let data = await userModel.findOne({email}).exec();
+if(data)errors.exist = "User Already Exist" ;
+
+} catch (error) {
+  console.log(error);
 }
+  // if no error
+  if(Object.keys(errors).length < 1){
 
-// read all users
-module.exports = allUsers = (req , res)=>{
-  let users = userModel.find({}).exec().then((data)=>{
-    res.send(data)
-  })
+   // hasing password 
+   const salt = bcrypt.genSaltSync(10);
+   const hashPassword = bcrypt.hashSync(password, salt);
 
-}
-
-// read a user
-
-module.exports = aUser = (req , res)=>{
-
-  const ID = req.params.id ;
-  let aUser = userModel.findById(ID).exec().then((data)=>{
-    res.send(data)
-  })
-
-}
-
-
-// edit a user
-module.exports = editUser = (req, res)=>{
+   try {
+    
+    let user = userModel({
+      email,
+      fullName,
+      password  : hashPassword
+    });
   
-  const{fullName, password, id} = req.body  ;
-let editProfile = userModel.findByIdAndUpdate(id, {fullName, password}).then(()=>{
-  res.send("User edited successfully");
-})
+    user.save().
+    then( ()=> res.status(200).json({msg: "Registered successfully"}) );
 
-} 
+   } catch (error) {
+    throw new error ;
+    console.log(error)
+   }
+  
+  }else{
+    // if error
+    res.status(200).json(errors);
+  }
+  
 
+  
 
-// delete a user
-module.exports = deleteUser = (req, res)=>{
-  let deleteUser = userModel.findByIdAndDelete(req.body.id).then(()=>{
-    res.send("Deleted successfully");
-  })
 }
+
+
+ module.exports = login = async(req, res)=>{
+  let loginErrors = [];
+  // if not JSON
+if(Object.keys(req.body).length < 1){
+  res.status(400).json({msg : "Bad Request or empty filed(s)"})
+}else{
+  let{email, password} = req.body ;
+  // cjeck if user exist
+  try {
+    let data = await userModel.findOne({email}).exec();
+  if(!data){
+    // user does not exist
+    loginErrors.push("invalid email");
+    res.status(201).json("invalid email");
+
+  }else{
+    // if user exist
+if(bcrypt.compareSync(password, data.password) ) {
+  res.status(200).json("login successfull");
+}else{
+  res.status(401).json("Wrong password");
+}
+    
+
+  }
+  
+  } catch (error) {
+    console.log(error);
+  }
+
+}
+
+
+ }
