@@ -61,6 +61,9 @@ if(data)errors.exist = "User Already Exist" ;
 
 }
 
+module.exports = getLogin  =  (req, res)=>{
+  res.send("This is login page");
+}
 
  module.exports = login = async(req, res)=>{
   let loginErrors = [];
@@ -80,7 +83,13 @@ if(Object.keys(req.body).length < 1){
   }else{
     // if user exist
 if(bcrypt.compareSync(password, data.password) ) {
-  res.status(200).json("login successfull");
+ 
+  const{_id, fullName, email} = data ;
+  data  ={_id, fullName, email} ;
+  // session variable
+  req.session.user = data ;
+  req.session.login = true ;
+  res.status(200).json({user :  req.session.user, login :  req.session.login});
 }else{
   res.status(401).json("Wrong password");
 }
@@ -96,3 +105,18 @@ if(bcrypt.compareSync(password, data.password) ) {
 
 
  }
+
+// logout
+
+ module.exports = logout  = (req, res)=>{
+   // sestroy session
+   req.session.destroy(()=>{
+    res.send("Yu are logout") ;
+   })
+ }
+
+ module.exports = home  = (req, res)=>{
+   res.send(req.session.login) ;
+ } 
+ 
+  
