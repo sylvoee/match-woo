@@ -8,6 +8,18 @@ require('gitignore');
 const session = require('express-session');
 const connectMongo = require('connect-mongo');
 const cookieParser = require('cookie-parser');
+let cors = require('cors');
+
+
+// set up cors
+app.use(cors({
+  origin : '*',
+  credentials : false ,
+  methods :["GET", "PUT","DELETE","POST"],
+  optionsSuccessStatus :200
+}));
+
+
 
 // accept json data
 express.json();
