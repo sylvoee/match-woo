@@ -13,10 +13,9 @@ module.exports = createMessage =(req, res)=>{
        // sinking data into collection
       try{
         let sendM = new messageModel({
-            message ,receiverID , senderID : req.session.user._id, user:req.session.user._id
-           }) ;
-           sendM.save();
-           res.send("Message sent")
+            message ,receiverID , senderID : req.session.user._id, user:req.session.user._id}) ;
+            let sendMess = sendM.save();
+            sendMess ? res.status(200).json("Message sent") : res.status(204).json("Message not sent");     
       }catch(err){
         console.log(err) ;
       } ;
@@ -29,7 +28,7 @@ module.exports = getAMessage = async(req, res)=>{
     let ID = req.body.id ;
    try{
     let aMessage = await messageModel.findById(ID).populate({path:'user', select: 'email fullName'}).exec();
-    res.json(aMessage);
+    aMessage ?res.status(200).json(aMessage) : res.status(204).json("Failed to fetch Message") ;
    }catch(err){
       console.log(err) ;
    }
@@ -37,10 +36,12 @@ module.exports = getAMessage = async(req, res)=>{
 
 
 // get all Message
-module.exports = getAllMessage =  (req, res)=>{
+module.exports = getAllMessage = (req, res)=>{
 
  messageModel.find({$or :  [{receiverID: req.session.user._id }, {senderID:  req.session.user._id}] }).populate({path:'user', select: 'email fullName'}).exec().
- then(data => res.json(data))
+ then((data) => {
+  data ? res.json(data) : res.status(204).json("Can not fetch message");
+ })
  .catch((err)=>{
     console.log(err)
  });
@@ -56,7 +57,7 @@ module.exports = editMessage= async(req, res)=>{
         let edit = await messageModel.findByIdAndUpdate(id, {
             message
          }) ;
-         res.json("Message edited");
+         edit ? res.status(200).json("Message edited") : res.status(204).json("Fail to edit") ;
         
     }catch(err){
         console.log(err);
@@ -66,8 +67,8 @@ module.exports = editMessage= async(req, res)=>{
 // deleteMessage
 module.exports = deleteMessage = async(req, res)=>{
     try{
-        await messageModel.findByIdAndDelete(req.body.id) ;
-        res.send("message delete");
+        let delM = await messageModel.findByIdAndDelete(req.body.id) ;
+        delM ? res.send("message delete") : res.status(204).json("Message failed to Delete") ;
     }catch(err){
       console.log(err) ;
     }

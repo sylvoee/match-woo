@@ -1,26 +1,26 @@
 {
-  "name": "crud-api",
+  "name": "match-woo",
   "version": "1.0.0",
-  "description": "A crud API",
+  "description": "This is a match making API",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon app.js"
+    "start": "nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Sylvester",
+  "author": "Sylvester Ehiemuan (Sylvoee@gmail.com)",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.1",
-    "body-parser": "^1.20.3",
+    "body-parser": "^2.2.0",
     "connect-mongo": "^5.1.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
-    "dotenv": "^16.4.7",
-    "express": "^4.21.2",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
     "express-session": "^1.18.1",
     "gitignore": "^0.7.0",
-    "mongoose": "^8.9.5",
-    "multer": "^1.4.5-lts.1",
+    "mongoose": "^8.13.2",
+    "multer": "^1.4.5-lts.2",
     "nodemon": "^3.1.9"
   }
 }

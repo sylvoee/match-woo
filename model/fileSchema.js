@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 let fileSchema = mongoose.Schema({
     id: {type:mongoose.Schema.Types.ObjectId},
+    src : String ,
     fileName : String,
     
     user:{

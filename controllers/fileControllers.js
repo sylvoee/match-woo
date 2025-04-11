@@ -9,12 +9,13 @@ module.exports = uploadFile = (req, res)=>{
      console.log(req.file);
     let aFile = new fileModel({
         fileName : req.file.filename,
+        src : `myUploads/${req.file.filename}`,
         user : req.session.user._id
     });
 
     try {
-         aFile.save() ;
-        res.send("photo upload successful");
+         let saveFile = aFile.save() ;
+     saveFile ?    res.status(200).json("photo upload successful") : res.status(200).json("File upload failed")
     } catch (error) {
         res.send({err : error});
     }
@@ -27,7 +28,7 @@ module.exports = uploadFile = (req, res)=>{
         try {
           // read all file
              let docs = await fileModel.find({}).exec();
-          docs ?   res.status(200).json({docs}) : res.send("No record found") ;
+          docs ?   res.status(200).json({docs}) : res.status(200).json("No record found") ;
             // console.log(docs);
         } catch (error) {
               res.status(200).send("No record found/ error")     
@@ -42,18 +43,16 @@ module.exports = uploadFile = (req, res)=>{
       try {
         // read all file
            let docs = await fileModel.find({fileName: req.body.id}).exec();
-        docs ?   res.status(200).json({docs}) : res.send("No record found") ;
+        docs ?   res.status(200).json({docs}) : res.status(200).json("No record found") ;
         
       } catch (error) {
-            res.status(200).send("No record found/ error")     
+            res.status(200).send("Error")     
       }
        
       }
 
 
         
-
-
         // delete file
         module.exports = deleteFile = async(req, res)=>{
           let ID = req.body.fileName; 
@@ -63,7 +62,7 @@ module.exports = uploadFile = (req, res)=>{
             // remove file from the folder
             fs.unlinkSync('./myUploads/'+ ID)  ;   
       
-            dFile ? res.send("File successfully deleted") : res.send("Failed to delete")  ;
+            dFile ? res.status(200).json("File successfully deleted") : res.status(200).json("Failed to delete")  ;
            
           } catch (error) {  res.send(error) ;}
           

@@ -1,4 +1,4 @@
-const dController = require('./controllers/dashBoardController');
+
 const userController = require('./controllers/userController');
 const Procted = require('./utils/protectedR');
 const profileCon = require('./controllers/profileController');
@@ -15,7 +15,7 @@ router.post('/register', register);
 router.post('/login', login );
 router.post('/g-login', getLogin );
 router.get('/logout', logout);
-router.get('/dashboard',protectedRoute, dashBoard);
+
 
 
 
@@ -34,7 +34,7 @@ router.delete('/d-message',  protectedRoute, deleteMessage);
 
 
 // file routes
-router.post('/upload-file', protectedRoute, upload.single('photo'), uploadFile);
+router.post('/upload-file', protectedRoute, upload.single('file'), uploadFile);
 router.get('/view-files', protectedRoute, viewFile);
 router.get('/view-a-file', protectedRoute, viewAFile);  
 router.delete('/delete-photo', protectedRoute, deleteFile);
